@@ -1,56 +1,62 @@
 "use client";
 
-import { motion } from "motion/react";
-import { ArrowRight, BriefcaseBusiness, Cloud, Code2, Database, GraduationCap, MapPin, Network, ShieldCheck, Signal, Trophy } from "lucide-react";
+import { useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
+import { ArrowRight, BriefcaseBusiness, Cloud, Code2, GraduationCap, MapPin, Network, Server, ShieldCheck, Trophy } from "lucide-react";
 
-const specialties = [
-  { title: "DevOps & Cloud", Icon: Cloud },
-  { title: "Full-Stack Development", Icon: Code2 },
-  { title: "Networking", Icon: Network },
-  { title: "Observability", Icon: Signal },
-  { title: "Data & AI", Icon: Database },
+const disciplines = [
+  { title: "Cloud", detail: "Azure · AWS", Icon: Cloud },
+  { title: "Networking", detail: "Cisco · TCP/IP", Icon: Network },
+  { title: "Servers", detail: "Linux · Docker", Icon: Server },
+  { title: "Software", detail: "Code · APIs", Icon: Code2 },
 ];
-
 const journey = [
-  { title: "EZELINK", detail: "DevOps Engineer", Icon: BriefcaseBusiness },
-  { title: "Dialog Axiata", detail: "DevOps & Data", Icon: BriefcaseBusiness },
-  { title: "University of Colombo", detail: "Bachelor of IT", Icon: GraduationCap },
+  { title: "EZELINK", detail: "DevOps Engineer", period: "Current", description: "Infrastructure automation, monitoring, platform reliability and high-availability operations at EZELINK Telecom LLC.", Icon: BriefcaseBusiness },
+  { title: "Dialog Axiata", detail: "DevOps & Data", period: "Previous", description: "Production operations, automation, SQL reporting and data analytics across telecom systems at Dialog Axiata PLC.", Icon: BriefcaseBusiness },
+  { title: "University of Colombo", detail: "Bachelor of IT", period: "Education", description: "Building a foundation in information technology, software development and systems engineering.", Icon: GraduationCap },
 ];
 
 export default function AboutSection() {
+  const [active, setActive] = useState(0);
+  const reducedMotion = useReducedMotion();
+  const selected = journey[active];
   return (
-    <section id="about" className="section about-new" aria-label="About Ashan Sithara">
-      <div className="container about-new-layout">
-        <motion.div className="about-new-intro" initial={{opacity:0,y:24}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.2}} transition={{duration:.65}}>
-          <p className="about-new-eyebrow"><span>01 / ABOUT ME</span><i /></p>
-          <h2>Engineering across <span>code, cloud &amp; networks.</span></h2>
-          <p className="about-new-description">I&apos;m Ashan, a Dubai-based DevOps Engineer with 6+ years across infrastructure, telecom systems, software development and data analytics. I build end-to-end solutions—from backend APIs and mobile apps to secure networks, resilient platforms and monitoring.</p>
-          <div className="about-new-capabilities" aria-label="Technology experience at a glance">
-            <div><strong>BUILD</strong><span>PHP &amp; Laravel · Java · Python · Next.js · Flutter / Dart</span></div>
-            <div><strong>OPERATE</strong><span>Azure · AWS · Linux · Docker · high-availability systems</span></div>
-            <div><strong>OBSERVE &amp; CONNECT</strong><span>Grafana · InfluxDB · Prometheus · SNMP · Cisco networking</span></div>
-          </div>
-          <div className="about-new-specialties" aria-label="Engineering specializations">
-            {specialties.map(({title,Icon})=><a key={title} href="#expertise" className="about-new-specialty"><Icon size={20} strokeWidth={1.9}/><span>{title}</span></a>)}
-          </div>
-          <a className="about-new-journey-link" href="#experience">Explore my journey <ArrowRight size={20}/></a>
-        </motion.div>
-        <motion.div className="about-new-right" initial={{opacity:0,y:30}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.15}} transition={{duration:.7,delay:.13}}>
-          <div className="about-new-identity">
-            <div className="about-new-portrait-glow" aria-hidden="true"/>
-            <img className="about-new-person" src="/ashan-about-portrait-hd.png" alt="High-resolution professional portrait of Ashan Sithara" loading="lazy"/>
-            <div className="about-new-identity-label"><span className="about-new-green-dot"/><strong>ASHAN SITHARA</strong><small>DEVOPS ENGINEER</small><span className="about-new-languages">PHP / JAVA / PYTHON / FLUTTER / LINUX / CISCO</span></div>
-            <div className="about-new-timeline" aria-label="Career and education highlights">
-              {journey.map(({title,detail,Icon})=><div className="about-new-milestone" key={title}><span className="about-new-node"/><div className="about-new-milestone-icon"><Icon size={23} strokeWidth={1.75}/></div><div><strong>{title}</strong><small>{detail}</small></div></div>)}
-              <p>ENGINEER.<br/>BUILDER.<br/><span>CONTINUOUS<br/>LEARNER.</span></p>
+    <section id="about" className="section about-future" aria-labelledby="about-title">
+      <div className="container">
+        <p className="af-eyebrow"><span>01 / ABOUT ME</span><i /> THE HUMAN BEHIND THE SYSTEMS</p>
+        <div className="af-layout">
+          <motion.div className="af-copy" initial={reducedMotion ? false : { opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .2 }} transition={{ duration: .6 }}>
+            <h2 id="about-title">Engineering across <span>code, cloud<br />&amp; networks.</span></h2>
+            <p className="af-description">I&apos;m <strong>Ashan Sithara</strong>, a Dubai-based DevOps Engineer with 6+ years across infrastructure, telecom systems, software development and data analytics.</p>
+            <p className="af-description">I connect the dots between software and infrastructure—building everything from backend APIs and mobile apps to secure networks, resilient platforms and monitoring.</p>
+            <div className="af-capabilities">
+              <div><span>BUILD</span><p>PHP · Java · Python · Next.js · Flutter</p></div>
+              <div><span>OPERATE</span><p>Azure · AWS · Linux · Docker</p></div>
+              <div><span>CONNECT</span><p>Cisco · Grafana · Prometheus · SNMP</p></div>
             </div>
+            <a className="af-link" href="#expertise">Explore my expertise <ArrowRight size={18} /></a>
+          </motion.div>
+          <div className="af-visual" aria-label="Ashan surrounded by cloud, networking, server and software specializations">
+            <div className="af-orbit-space" aria-hidden="true"><div className="af-halo" /><div className="af-ring af-ring-one" /><div className="af-ring af-ring-two" /><div className="af-ring af-ring-three" /><div className="af-platform" /></div>
+            <div className="af-portrait"><img src="/ashan-about-portrait-hd.png" alt="Ashan Sithara" loading="lazy" width={1200} height={1311} /></div>
+            {disciplines.map(({ title, detail, Icon }, index) => <a href="#expertise" className={`af-float af-float-${index}`} key={title}><span className="af-float-icon"><Icon size={25} strokeWidth={1.6} /></span><span><strong>{title}</strong><small>{detail}</small></span><span className="af-card-dot" aria-hidden="true" /></a>)}
+            <div className="af-nameplate"><span className="af-status" /><div><strong>ASHAN SITHARA</strong><small>DEVOPS ENGINEER · DUBAI, UAE</small></div></div>
           </div>
-          <div className="about-new-stats">
-            <div><span className="about-new-stat-icon"><Trophy/></span><p><strong>6+ years</strong><small>IT Engineering</small></p></div>
-            <div><span className="about-new-stat-icon violet"><ShieldCheck/></span><p><strong>AZ-104</strong><small>Microsoft Certified</small></p></div>
-            <div><span className="about-new-stat-icon"><MapPin/></span><p><strong>Dubai</strong><small>UAE</small></p></div>
+        </div>
+        <div className="af-bottom">
+          <div className="af-journey">
+            <div className="af-journey-heading"><span>MY JOURNEY</span><a href="#experience">Full experience <ArrowRight size={14} /></a></div>
+            <div className="af-timeline" aria-label="Career and education highlights">
+              {journey.map(({ title, detail, period, Icon }, index) => <button type="button" key={title} className={`af-stop ${active === index ? "is-active" : ""}`} aria-pressed={active === index} aria-controls="af-career-detail" onClick={() => setActive(index)}><span className="af-stop-node"><Icon size={18} /></span><span><small>{period}</small><strong>{title}</strong><span>{detail}</span></span></button>)}
+            </div>
+            <div id="af-career-detail" className="af-career-detail" aria-live="polite" aria-atomic="true"><strong>{selected.detail}</strong><p>{selected.description}</p></div>
           </div>
-        </motion.div>
+          <div className="af-stats">
+            <div><Trophy /><strong>6+ years</strong><span>IT Engineering</span></div>
+            <div><ShieldCheck /><strong>AZ-104</strong><span>Microsoft Certified</span></div>
+            <div><MapPin /><strong>Dubai</strong><span>United Arab Emirates</span></div>
+          </div>
+        </div>
       </div>
     </section>
   );
