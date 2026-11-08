@@ -108,8 +108,12 @@ function setup(layer: HTMLElement) {
       gsap.set([...cursorEls, ...ripples], { autoAlpha: 0 });
       section.removeEventListener("focusin", finish);
       window.removeEventListener("resize", onResize);
+      window.removeEventListener("orientationchange", finish);
     };
-    const onResize = () => { if (tl) finish(); }; // measured paths are stale: settle immediately
+    // A width change / rotation makes measured paths stale: settle immediately. Height-only resizes (mobile address
+    // bar showing/hiding while scrolling) are ignored so they don't cancel the animation.
+    let lastW = window.innerWidth;
+    const onResize = () => { if (window.innerWidth === lastW) return; lastW = window.innerWidth; if (tl) finish(); };
 
     const play = () => {
       const r = section.getBoundingClientRect();
@@ -117,9 +121,10 @@ function setup(layer: HTMLElement) {
       tl = build(gEls, cursorEls, ripples, finish);
     };
 
-    st = ScrollTrigger.create({ trigger: section, start: "top 80%", once: true, onEnter: play });
+    st = ScrollTrigger.create({ trigger: section, start: "clamp(top 80%)", once: true, onEnter: play });
     section.addEventListener("focusin", finish); // keyboard users get the content instantly
     window.addEventListener("resize", onResize);
+    window.addEventListener("orientationchange", finish);
     finishers.push(finish);
   });
 

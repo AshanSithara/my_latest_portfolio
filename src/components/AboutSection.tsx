@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
 import { ArrowRight, BriefcaseBusiness, Cloud, Code2, GraduationCap, MapPin, Network, Server, ShieldCheck, Trophy } from "lucide-react";
 
@@ -38,7 +39,7 @@ export default function AboutSection() {
           </motion.div>
           <div className="af-visual" aria-label="Ashan surrounded by cloud, networking, server and software specializations">
             <div className="af-orbit-space" aria-hidden="true"><div className="af-halo" /><div className="af-ring af-ring-one" /><div className="af-ring af-ring-two" /><div className="af-ring af-ring-three" /><div className="af-platform" /></div>
-            <div className="af-portrait"><img src="/ashan-about-portrait-hd.png" alt="Ashan Sithara" loading="lazy" width={1200} height={1311} /></div>
+            <div className="af-portrait"><Image src="/ashan-about-portrait-hd.png" alt="Ashan Sithara" width={1200} height={1311} sizes="(max-width: 850px) 80vw, 40vw" /></div>
             {disciplines.map(({ title, detail, Icon }, index) => <a href="#expertise" className={`af-float af-float-${index}`} key={title}><span className="af-float-icon"><Icon size={25} strokeWidth={1.6} /></span><span><strong>{title}</strong><small>{detail}</small></span><span className="af-card-dot" aria-hidden="true" /></a>)}
             <div className="af-nameplate"><span className="af-status" /><div><strong>ASHAN SITHARA</strong><small>DEVOPS ENGINEER · DUBAI, UAE</small></div></div>
           </div>

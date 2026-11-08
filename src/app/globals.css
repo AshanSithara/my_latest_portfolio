@@ -191,6 +191,53 @@
 @media(max-width:480px){.about-future{padding:65px 0}.about-future .container{width:calc(100% - 36px)}.af-eyebrow{flex-wrap:wrap;line-height:1.7;letter-spacing:.1em}.af-eyebrow i{flex:1}.af-copy{padding-top:22px}.af-copy h2{font-size:39px}.af-description{font-size:14px}.af-capabilities p{font-size:11px}.af-visual{height:440px;margin-top:10px}.af-portrait{inset:13% 12% 16%}.af-ring{left:9%;width:82%}.af-float{padding:10px 8px;gap:7px;border-radius:10px}.af-float-icon{width:28px;height:30px}.af-float-icon svg{width:20px}.af-float strong{font-size:11px}.af-float small{font-size:8px}.af-card-dot{display:none}.af-float-0{top:15%;left:0}.af-float-1{right:0;top:32%}.af-float-2{left:0;bottom:27%}.af-float-3{bottom:16%;right:0}.af-nameplate{left:15%;right:15%;bottom:4%;padding:12px 8px}.af-nameplate strong{font-size:11px}.af-nameplate small{font-size:7px}.af-journey{padding:19px 15px}.af-timeline{gap:10px}.af-stop strong{font-size:11px}.af-stop>span>span{font-size:9px;line-height:1.5}.af-career-detail{min-height:110px}.af-stats strong{font-size:16px}.af-stats>div>span{font-size:9px;line-height:1.5}.af-stats>div{padding:19px 5px;gap:9px}}
 @media(prefers-reduced-motion:reduce){.about-future .af-ring,.about-future .af-float{animation:none}.af-ring-one{transform:rotateZ(-24deg) rotateY(55deg)}.af-ring-two{transform:rotateZ(35deg) rotateY(62deg)}.af-ring-three{transform:rotateX(63deg) rotateZ(-20deg)}}
 
+/* Responsive refinements: tablet + mobile only (<=900px). Desktop (>900px) is untouched. */
+@media(max-width:900px){
+  html{scroll-padding-top:78px}
+  /* Header: hamburger menu on tablets too (the full link row + CTA no longer fit). */
+  .site-header{height:66px}
+  .header-cta{display:none}
+  .menu-toggle{display:grid;place-items:center;width:44px;height:44px;margin-right:-10px;border-radius:10px;cursor:pointer}
+  .menu-toggle:focus-visible,.nav-links a:focus-visible{outline:2px solid var(--cyan);outline-offset:-2px}
+  .nav-links{display:none;position:absolute;top:66px;left:0;right:0;margin:0;padding:10px 18px 18px;background:#091327;backdrop-filter:blur(20px);border-bottom:1px solid #29476c;flex-direction:column;align-items:stretch;gap:0;max-height:calc(100dvh - 66px);overflow-y:auto;overscroll-behavior:contain}
+  .nav-links.open{display:flex}
+  .nav-links a{display:flex;align-items:center;min-height:46px;padding:0 13px;font-size:15px;border-radius:8px}
+
+  /* Hero: one balanced column -> copy, portrait/3D scene, domain tabs, technology chips. */
+  .legacy-hero{flex-direction:column;align-items:stretch;min-height:auto}
+  .legacy-hero .hero-copy{order:1;width:100%;max-width:none}
+  .legacy-hero .hero-visual{order:2}
+  .legacy-hero .domain-tabs{order:3}
+  .legacy-hero .mobile-tech-list{order:4}
+  .legacy-hero .scroll-prompt{display:none}
+  .legacy-hero .interactive-hero{height:auto;margin:26px 0 0;display:flex;flex-direction:column}
+  .legacy-hero .interactive-hero>.mobile-cloud,.legacy-hero .interactive-hero>.cloud-fallback,.legacy-hero .interactive-hero>.h-full{position:relative;flex:none;width:100%;height:clamp(300px,86vw,560px)}
+  /* Absolute logo tiers would overlap the portrait in a narrow column; the same tools are offered as chips below. */
+  .legacy-hero .hero-tech-tier{display:none}
+  .legacy-hero .interactive-hero .domain-detail{position:relative;inset:auto;transform:none;width:auto;max-width:none;margin-top:14px}
+  .legacy-hero .interactive-hero .drag-hint{position:static;transform:none;width:auto;max-width:none;margin:12px 0 0;text-align:center;line-height:1.5}
+  .legacy-hero .domain-tabs{position:relative;inset:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:18px}
+  .legacy-hero .domain-tab{min-height:48px}
+  .legacy-hero .mobile-tech-list{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}
+  .legacy-hero .mobile-tech-list button{min-height:38px;padding:8px 12px;font-size:11px;background:#132744;color:#9cc2e7;border:1px solid #315681;border-radius:6px;cursor:pointer}
+  .legacy-hero .mobile-tech-list button.active{background:#22446f;color:#fff;border-color:#48c9ef}
+  .legacy-hero .hero-actions a{min-height:48px}
+  .footer-links a{display:inline-flex;align-items:center;min-height:44px}
+}
+/* Tablet: a later rule forces 3 project columns at every width, which overflows below ~900px. */
+@media(min-width:761px) and (max-width:900px){
+  .project-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .legacy-hero .domain-tabs{grid-template-columns:repeat(5,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .legacy-hero .domain-tabs{grid-template-columns:1fr 1fr}
+  .legacy-hero .domain-tab:last-child:nth-child(odd){grid-column:1/-1}
+}
+@media(max-width:400px){
+  .legacy-hero .domain-tabs{grid-template-columns:1fr 1fr}
+  .legacy-hero h1{font-size:clamp(34px,10.5vw,42px)}
+}
+
 /* Intro sequence (src/components/IntroLoader.tsx). Active only while html.intro-active is set by the inline script in layout.tsx.
    Hero elements are hidden with visibility only (layout is untouched) and revealed one by one by GSAP. */
 html.intro-active :is(.reference-live-brand,.reference-live-nav a,.reference-live-header-actions,.reference-live-eyebrow,.reference-live-copy h1>span,.reference-live-disciplines,.reference-live-actions a,.reference-live-metrics>div,.site-header .brand,.site-header .nav-links a,.site-header .header-cta,.site-header .menu-toggle,.legacy-hero .availability,.legacy-hero .hero-eyebrow,.legacy-hero h1,.legacy-hero .hero-intro,.legacy-hero .hero-actions a,.legacy-hero .hero-micro span,.interactive-hero,.hero-brand-card,.domain-detail,.domain-tabs button,.mobile-tech-list button){visibility:hidden;transition:none}

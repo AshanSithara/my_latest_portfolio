@@ -116,7 +116,8 @@ export default function IntroLoader() {
       let t = firstAt;
       s.pts.forEach((p, i) => {
         const dur = i === 0 ? MOVE : hop;
-        tl.to(active[ci], { x: p.x, y: p.y, duration: dur, ease: i === 0 ? "power3.inOut" : "power1.inOut" }, t - dur);
+        const c = active[ci]; // flip the label left near the right edge (e.g. the mobile menu button) so it is not clipped
+        tl.to(c, { x: p.x, y: p.y, duration: dur, ease: i === 0 ? "power3.inOut" : "power1.inOut", onStart: () => c.toggleAttribute("data-flip", p.x > vw - 90) }, t - dur);
         if (i === 0 || s.clickEach) click(ci, p, t);
         s.reveal(i, t + 0.03);
         t += hop;
@@ -175,7 +176,7 @@ export default function IntroLoader() {
       window.__introPlay = false;
       html.classList.remove("intro-active");
       gsap.set(elTargets, { clearProps: "opacity,visibility,transform,clipPath" });
-      gsap.set(slots, { clearProps: "backgroundColor,borderColor,boxShadow" });
+      if (slots.length) gsap.set(slots, { clearProps: "backgroundColor,borderColor,boxShadow" });
       hero?.style.removeProperty("--intro-r");
       removeListeners();
       ctx.kill(false); // keep the cleared state; never revert back to hidden
@@ -199,7 +200,9 @@ export default function IntroLoader() {
 
     const onKey = (e: KeyboardEvent) => { if (e.key !== "Tab" && e.key !== "Shift") finish(); };
     const onPointer = (e: PointerEvent) => { if (!root.current?.contains(e.target as Node)) finish(); };
-    const events: [string, EventListener][] = [["wheel", finish], ["touchmove", finish], ["resize", finish], ["keydown", onKey as EventListener], ["pointerdown", onPointer as EventListener]];
+    const lastW = window.innerWidth; // ignore height-only resizes (mobile address bar); width/orientation changes skip
+    const onResize = () => { if (window.innerWidth !== lastW) finish(); };
+    const events: [string, EventListener][] = [["wheel", finish], ["touchmove", finish], ["resize", onResize], ["orientationchange", finish], ["keydown", onKey as EventListener], ["pointerdown", onPointer as EventListener]];
     events.forEach(([type, fn]) => window.addEventListener(type, fn, { passive: true }));
     const removeListeners = () => events.forEach(([type, fn]) => window.removeEventListener(type, fn));
 

@@ -1,7 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { Component, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { motion } from "motion/react";
 import ReferenceHero from "@/components/ReferenceHero";
 import AboutSection from "@/components/AboutSection";
@@ -25,6 +26,16 @@ const brandLogos: Record<string,{path?:string;src?:string;color:string}> = {
 function BrandLogo({name}:{name:string}) {
   const logo=brandLogos[name];
   return <span className={`brand-logo ${logo.src?"brand-logo-image":""}`} aria-hidden="true">{logo.src?<img src={logo.src} alt=""/>:<svg viewBox="0 0 24 24" fill={logo.color} role="presentation"><path d={logo.path}/></svg>}</span>;
+}
+
+// Falls back to the static portrait if WebGL is unavailable or the 3D scene throws (instead of crashing the page).
+class SceneBoundary extends Component<{ fallback: React.ReactNode; children: React.ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  render() { return this.state.failed ? this.props.fallback : this.props.children; }
+}
+function supportsWebGL() {
+  try { const c = document.createElement("canvas"); const gl = c.getContext("webgl2") || c.getContext("webgl"); gl?.getExtension("WEBGL_lose_context")?.loseContext(); return !!gl; } catch { return false; }
 }
 
 const CloudScene = dynamic(() => import("@/components/CloudScene"), { ssr: false, loading: () => <div className="cloud-fallback" aria-label="Loading cloud visualization"><Cloud size={92} strokeWidth={0.7} /></div> });
@@ -97,15 +108,32 @@ export default function Home() {
   const [activeTech,setActiveTech] = useState("Grafana");
   const selectedTech = techDetails[activeTech] ?? techDetails.Grafana;
   const selectTech = (name:string) => {setActiveTech(name);setActiveDomain((techDetails[name]??techDetails.Grafana).domain);};
+  const heroPortrait = <div className="mobile-cloud portrait-mobile"><Image src="/ashan-3d-portrait.png" alt="3D-styled portrait of Ashan Sithara" fill priority sizes="(max-width: 900px) 92vw, 16px"/></div>;
+  const navRef = useRef<HTMLElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  // Mobile menu: focus the first link on open, close on Escape (returning focus), outside tap, or growing to desktop.
+  useEffect(() => {
+    if (!menuOpen) return;
+    navRef.current?.querySelector("a")?.focus({ preventScroll: true });
+    const close = () => setMenuOpen(false);
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { close(); toggleRef.current?.focus(); } };
+    const onDown = (e: PointerEvent) => { const t = e.target as Node; if (!navRef.current?.contains(t) && !toggleRef.current?.contains(t)) close(); };
+    const desktop = window.matchMedia("(min-width: 901px)");
+    const onMq = () => { if (desktop.matches) close(); };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onDown);
+    desktop.addEventListener("change", onMq);
+    return () => { document.removeEventListener("keydown", onKey); document.removeEventListener("pointerdown", onDown); desktop.removeEventListener("change", onMq); };
+  }, [menuOpen]);
   const [portraitTilt,setPortraitTilt] = useState({x:0,y:0});
-  useEffect(() => { const mq = window.matchMedia("(prefers-reduced-motion: reduce)"); const update = () => setReducedMotion(mq.matches); update(); mq.addEventListener("change", update); setSceneEnabled(window.matchMedia("(min-width: 720px)").matches && !mq.matches); return () => mq.removeEventListener("change", update); }, []);
+  useEffect(() => { const mq = window.matchMedia("(prefers-reduced-motion: reduce)"); const update = () => setReducedMotion(mq.matches); update(); mq.addEventListener("change", update); setSceneEnabled(window.matchMedia("(min-width: 720px)").matches && !mq.matches && supportsWebGL()); return () => mq.removeEventListener("change", update); }, []);
   return <main>
     <div className="site-backdrop" aria-hidden="true" />
-    <header className="site-header"><div className="container header-inner"><a href="#top" className="brand" aria-label="Ashan Sithara home"><span className="brand-mark"><span/><span/></span>ASHAN <span>SITHARA</span></a><nav className={menuOpen ? "nav-links open" : "nav-links"} aria-label="Main navigation">{nav.map(item => <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setMenuOpen(false)}>{item}</a>)}</nav><a className="header-cta" href="#contact">Let&apos;s Talk <ArrowRight size={15}/></a><button className="menu-toggle" type="button" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X/> : <Menu/>}</button></div></header>
+    <header className="site-header"><div className="container header-inner"><a href="#top" className="brand" aria-label="Ashan Sithara home"><span className="brand-mark"><span/><span/></span>ASHAN <span>SITHARA</span></a><nav id="site-nav" ref={navRef} className={menuOpen ? "nav-links open" : "nav-links"} aria-label="Main navigation">{nav.map(item => <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setMenuOpen(false)}>{item}</a>)}</nav><a className="header-cta" href="#contact">Let&apos;s Talk <ArrowRight size={15}/></a><button ref={toggleRef} className="menu-toggle" type="button" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} aria-controls="site-nav" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X/> : <Menu/>}</button></div></header>
 
     <ReferenceHero/>
     <section id="mobile-top" className="hero container legacy-hero"><div className="hero-copy"><Reveal><div className="availability"><span className="status-dot"/> OPEN TO NEW OPPORTUNITIES <span className="availability-divider">/</span> DUBAI, UAE</div><p className="eyebrow hero-eyebrow">DEVOPS <span>•</span> SOFTWARE <span>•</span> CLOUD <span>•</span> NETWORKING</p><h1>From applications to infrastructure. <span className="gradient-text">I engineer the whole system.</span></h1><p className="hero-intro">I&apos;m <strong>Ashan Sithara,</strong> a Dubai-based DevOps engineer with 6 years of experience across IT infrastructure, telecom networks and data-driven operations. I also develop web and mobile solutions using PHP, Java, Next.js and Flutter—bringing software, cloud and networking together.</p><div className="hero-actions"><a className="btn-primary" href="#projects">Explore Projects <ArrowRight size={18}/></a><a className="btn-outline" href="#contact">Request My CV <ArrowDownToLine size={18}/></a></div><div className="hero-micro"><span><Cloud size={15}/> DevOps & Cloud</span><span><Code2 size={15}/> PHP / Java</span><span><Smartphone size={15}/> Flutter / Dart</span><span><Network size={15}/> Cisco & Networks</span></div></Reveal></div>
-      <div className="hero-visual interactive-hero"><div className="scene-glow"/>{sceneEnabled && !reducedMotion ? <CloudScene/> : <div className="mobile-cloud portrait-mobile"><img src="/ashan-3d-portrait.png" alt="3D-styled portrait of Ashan Sithara"/></div>}
+      <div className="hero-visual interactive-hero"><div className="scene-glow"/>{sceneEnabled && !reducedMotion ? <SceneBoundary fallback={heroPortrait}><CloudScene/></SceneBoundary> : heroPortrait}
         <div className="hero-tech-tier tier-monitoring" aria-label="Observability and data tools">{["Grafana","InfluxDB","Prometheus","Kafka"].map(t=><button key={t} type="button" className={`hero-brand-card primary ${activeTech===t?"selected":""}`} style={{"--tech-accent":brandLogos[t].color} as React.CSSProperties} onClick={()=>selectTech(t)} aria-pressed={activeTech===t}><BrandLogo name={t}/><span>{t}</span></button>)}</div>
         <div className="hero-tech-tier tier-engineering" aria-label="Cloud, software and networking tools">{["Azure","AWS","Docker","PHP","Java","Flutter","Cisco"].map(t=><button key={t} type="button" className={`hero-brand-card secondary ${activeTech===t?"selected":""}`} style={{"--tech-accent":brandLogos[t].color} as React.CSSProperties} onClick={()=>selectTech(t)} aria-pressed={activeTech===t}><BrandLogo name={t}/><span>{t}</span></button>)}</div>
         <div className="domain-detail" aria-live="polite"><span className="domain-detail-kicker">EXPLORE MY ENGINEERING WORLD</span><strong>{selectedTech.title}</strong><p>{selectedTech.summary}</p><div className="domain-tech">{selectedTech.tags.map(t=><span key={t}>{t}</span>)}</div></div><span className="drag-hint">{sceneEnabled ? "SLOWLY ROTATING 3D SCENE • SELECT A TOOL" : "SELECT A TECHNOLOGY BELOW"}</span></div>
