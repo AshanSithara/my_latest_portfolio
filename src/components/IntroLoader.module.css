@@ -1,0 +1,24 @@
+/* Cursor layer for the intro. It sits above the real homepage and never blocks it (only Skip is clickable).
+   The rules that hide/veil the real hero elements live in globals.css under html.intro-active. */
+.layer { position: fixed; inset: 0; z-index: 9999; pointer-events: none; overflow: hidden; }
+
+.cursor { position: absolute; top: 0; left: 0; z-index: 2; visibility: hidden; will-change: transform; }
+.cursorInner { position: relative; transform-origin: 4px 2px; margin: -2px 0 0 -4px; }
+.cursorInner svg { display: block; filter: drop-shadow(0 3px 6px rgba(0, 0, 0, .5)); }
+.cursorInner span { position: absolute; left: 18px; top: 18px; padding: 2px 8px; border-radius: 6px; font: 700 11px/1.4 var(--font-space, Arial), sans-serif; color: #070d1b; white-space: nowrap; }
+
+.ripple { position: absolute; top: 0; left: 0; z-index: 1; width: 56px; height: 56px; margin: -28px 0 0 -28px; border: 2px solid; border-radius: 50%; opacity: 0; visibility: hidden; }
+
+.skip { display: none; position: absolute; right: 20px; bottom: 20px; pointer-events: auto; padding: 8px 16px; border: 1px solid #36507a; border-radius: 99px; background: #0e1930cc; color: var(--white, #f5f8ff); font: 600 13px/1 var(--font-inter, Arial), sans-serif; cursor: pointer; backdrop-filter: blur(8px); transition: background .2s, border-color .2s; }
+:global(html.intro-active) .skip { display: block; }
+.skip:hover { background: #18284a; border-color: var(--cyan, #37d8f5); }
+.skip:focus-visible { outline: 2px solid var(--cyan, #37d8f5); outline-offset: 3px; }
+
+@media (max-width: 600px) {
+  .cursorInner span { font-size: 10px; padding: 2px 6px; }
+  .skip { right: 14px; bottom: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layer { display: none; }
+}
